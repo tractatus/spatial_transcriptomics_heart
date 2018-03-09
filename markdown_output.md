@@ -270,7 +270,16 @@ plot(seurat.object@dr$tsne@cell.embeddings, pch=16, cex=0.9, col=paste0(heart$at
 legend.data<-data.frame(col = unique(heart$atlas$color2), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
 legend.data<-legend.data[order(legend.data[,2]),]
 par(mar=c(4,0,4,0))
-plot(0,0, xlim=c(0,5), ylim=c(-5, nrow(legend.data)+5), col=0, axes=FALSE)
+plot(0,0, xlim=c(0,5), ylim=c(-5, nrow(legend.data)+5), col=0, axes=FALSE, xlab='', yab='')
+```
+
+    ## Warning in plot.window(...): "yab" is not a graphical parameter
+
+    ## Warning in plot.xy(xy, type, ...): "yab" is not a graphical parameter
+
+    ## Warning in title(...): "yab" is not a graphical parameter
+
+``` r
 points(rep(0, nrow(legend.data)), 1:nrow(legend.data), pch=21, bg=as.character(legend.data$col))
 text(rep(0, nrow(legend.data)), 1:nrow(legend.data), legend.data$acronym, pos=4)
 text(rep(1, nrow(legend.data)), 1:nrow(legend.data), legend.data$name, pos=4)
