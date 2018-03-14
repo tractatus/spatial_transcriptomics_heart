@@ -35,3 +35,20 @@ heart$atlas$index<-paste(heart$atlas$spot.pos, heart$atlas$image2, sep = '_')
 #get the color to your dataset
 mdata$color<-as.character(heart$atlas$color2[match(mdata$index, heart$atlas$index)])
 
+############
+# PLOT IT
+#############
+
+#plot the tSNE
+par(mfrow=c(1,2))
+plot(mdata$V1, mdata$V2, pch=16, cex=0.9, col=paste0(mdata$color), asp=1, xlab='', ylab='', main='', axes=FALSE)
+
+
+#plot legend is seperate plot
+legend.data<-data.frame(col = unique(heart$atlas$color2), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
+legend.data<-legend.data[order(legend.data[,2]),]
+par(mar=c(4,0,4,0))
+plot(0,0, xlim=c(0,5), ylim=c(-5, nrow(legend.data)+5), col=0, axes=FALSE, xlab='', yab='')
+points(rep(0, nrow(legend.data)), 1:nrow(legend.data), pch=21, bg=as.character(legend.data$col))
+text(rep(0, nrow(legend.data)), 1:nrow(legend.data), legend.data$acronym, pos=4)
+text(rep(1, nrow(legend.data)), 1:nrow(legend.data), legend.data$name, pos=4)
