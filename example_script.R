@@ -1,4 +1,4 @@
-load('./data/ST_heart_08032018.RData')
+load('./data/ST_heart_13032018.RData')
 
 #Set all genes not detected oin other sections (they are NA) to 0 UMI count.
 tmp<-heart$genes
