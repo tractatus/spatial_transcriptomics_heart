@@ -25,12 +25,12 @@ head(heart$atlas)
 ```
 
     ##            x        y intensity  area id   color  color2 acronym
-    ## 537 17044.09 14752.31         0 31934 17 #0B61A4    <NA>      RV
-    ## 550 15557.39 14725.60         0 30502 17 #0B61A4 #41b6c4      RV
-    ## 556 16338.52 14749.41         0 36820 17 #0B61A4 #41b6c4      RV
-    ## 565 17027.89 14057.10         0 32274 17 #0B61A4 #41b6c4      RV
-    ## 566 14857.41 14019.45         0 20654 17 #0B61A4 #41b6c4      RV
-    ## 570 19129.29 14026.82         0 33556 19 #FF4900    <NA>      LV
+    ## 537 17044.09 14752.31         0 31934 17 #0B61A4    <NA>      LV
+    ## 550 15557.39 14725.60         0 30502 17 #0B61A4 #41b6c4      LV
+    ## 556 16338.52 14749.41         0 36820 17 #0B61A4 #41b6c4      LV
+    ## 565 17027.89 14057.10         0 32274 17 #0B61A4 #41b6c4      LV
+    ## 566 14857.41 14019.45         0 20654 17 #0B61A4 #41b6c4      LV
+    ## 570 19129.29 14026.82         0 33556 19 #FF4900    <NA>      RV
     ##                name right.left rostral.caudal anterior.posterior spot.id
     ## 537 right ventricle  171.67656       486.1625                192     537
     ## 550 right ventricle   87.43070       447.6606                192     550
@@ -276,7 +276,7 @@ par(mfrow=c(1,2))
 plot(seurat.object@dr$tsne@cell.embeddings, pch=16, cex=0.9, col=paste0(heart$atlas$color2[as.integer(colnames(seurat.object@scale.data))], '80'), asp=1, xlab='', ylab='', main='', axes=FALSE)
 
 #plot legend is seperate plot
-legend.data<-data.frame(col = unique(heart$atlas$color2), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
+legend.data<-data.frame(col = na.omit(unique(heart$atlas$color2)), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
 legend.data<-legend.data[order(legend.data[,2]),]
 par(mar=c(4,0,4,0))
 plot(0,0, xlim=c(0,5), ylim=c(-5, nrow(legend.data)+5), col=0, axes=FALSE, xlab='', yab='')
