@@ -67,7 +67,7 @@ box3d()
 
 #draw all the spots with region color
 drawScene.rgl(organ.dwnsmp[which(names(organ.dwnsmp)%in%c('WH'))])
-spheres3d(598-heart$atlas$rostral.caudal, heart$atlas$right.left, heart$atlas$anterior.posterior, col=heart$atlas$color2, radius=5)
+spheres3d(598-heart$atlas$rostral.caudal, 532-heart$atlas$right.left, heart$atlas$anterior.posterior, col=heart$atlas$color2, radius=5)
 
 #save 3D image
 rgl.snapshot(file='test3dheart.png')
@@ -80,6 +80,6 @@ PaletteFunction <- colorRampPalette(c("blue", "white", "red"), space = "Lab")
 gene.expression<-PaletteFunction(100)[as.numeric(cut(scale(log2(gene.of.interest+1)), breaks = 100))]
 
 drawScene.rgl(organ.dwnsmp[which(names(organ.dwnsmp)%in%c('WH'))])
-spheres3d(598-master.dataset$rostral.caudal, master.dataset$right.left, master.dataset$anterior.posterior, col=gene.expression, radius=5)
+spheres3d(598-master.dataset$rostral.caudal, 532-master.dataset$right.left, master.dataset$anterior.posterior, col=gene.expression, radius=5)
 rgl.snapshot(filename='OGN_3d_heart.png')
 

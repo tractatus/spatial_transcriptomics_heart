@@ -7,7 +7,7 @@ Description of the data
 Begin by loading the pre-processed data:
 
 ``` r
-load('./data/ST_heart_08032018.RData')
+load('./data/ST_heart_27032018.RData')
 ```
 
 Lets see what it contains:
@@ -25,12 +25,12 @@ head(heart$atlas)
 ```
 
     ##            x        y intensity  area id   color  color2 acronym
-    ## 537 17044.09 14752.31         0 31934 17 #0B61A4 #0B61A4      RV
-    ## 550 15557.39 14725.60         0 30502 17 #0B61A4 #0B61A4      RV
-    ## 556 16338.52 14749.41         0 36820 17 #0B61A4 #0B61A4      RV
-    ## 565 17027.89 14057.10         0 32274 17 #0B61A4 #0B61A4      RV
-    ## 566 14857.41 14019.45         0 20654 17 #0B61A4 #0B61A4      RV
-    ## 570 19129.29 14026.82         0 33556 19 #FF4900 #FF4900      LV
+    ## 537 17044.09 14752.31         0 31934 17 #0B61A4    <NA>      RV
+    ## 550 15557.39 14725.60         0 30502 17 #0B61A4 #41b6c4      RV
+    ## 556 16338.52 14749.41         0 36820 17 #0B61A4 #41b6c4      RV
+    ## 565 17027.89 14057.10         0 32274 17 #0B61A4 #41b6c4      RV
+    ## 566 14857.41 14019.45         0 20654 17 #0B61A4 #41b6c4      RV
+    ## 570 19129.29 14026.82         0 33556 19 #FF4900    <NA>      LV
     ##                name right.left rostral.caudal anterior.posterior spot.id
     ## 537 right ventricle  171.67656       486.1625                192     537
     ## 550 right ventricle   87.43070       447.6606                192     550
@@ -171,13 +171,22 @@ Lets plot all the spots with the color according to their anatomical region:
 #draw all the spots with region color
 drawScene.rgl(organ[which(names(organ.dwnsmp)%in%c('WH'))])
 radius.of.spots.in.atlas.pixels<- (100/(2383.36/532))/3
-spheres3d(598-heart$atlas$rostral.caudal, heart$atlas$right.left, heart$atlas$anterior.posterior, col=heart$atlas$color2, radius=radius.of.spots.in.atlas.pixels)
+spheres3d(598-heart$atlas$rostral.caudal, 532-heart$atlas$right.left, heart$atlas$anterior.posterior, col=heart$atlas$color2, radius=radius.of.spots.in.atlas.pixels)
 #bounding box
 box3d()
 rgl.snapshot(filename='./images/3d_heart_spots.png')
 ```
 
 ![Showing spots in 3D.](./images/3d_heart_spots.png)
+
+Changeing colors depending on region can easily be done like this:
+
+``` r
+#create a matching index with regions accoridng to the order you want to change color
+matching.index <- match(heart$atlas$acronym, c('RA', 'LA', 'RV', 'LV', 'P', 'A', 'OT', 'epc'))
+#overwrite with the color vector
+heart$atlas$color2[!is.na(matching.index)] <- c('#c2e699', "#238443", '#41b6c4', '#225ea8', '#ffffb2', "#fd8d3c", '#e31a1c', '#9e9ac8')[na.omit(matching.index)]
+```
 
 Finally lets plot the gene expression of specific spots:
 
@@ -191,7 +200,7 @@ gene.expression<-PaletteFunction(100)[as.numeric(cut(scale(log2(gene.of.interest
 
 drawScene.rgl(organ[which(names(organ.dwnsmp)%in%c('WH'))])
 
-spheres3d(598-heart$atlas$rostral.caudal, heart$atlas$right.left, heart$atlas$anterior.posterior, col=gene.expression, radius=radius.of.spots.in.atlas.pixels )
+spheres3d(598-heart$atlas$rostral.caudal, 532-heart$atlas$right.left, heart$atlas$anterior.posterior, col=gene.expression, radius=radius.of.spots.in.atlas.pixels )
 rgl.snapshot(filename='./images/OGN_3d_heart.png')
 ```
 
@@ -230,7 +239,7 @@ seurat.object <- NormalizeData(object = seurat.object, normalization.method = "L
 seurat.object <- FindVariableGenes(object = seurat.object, mean.function = ExpMean, dispersion.function = LogVMR, x.low.cutoff = 0.5, x.high.cutoff = 5, y.cutoff = 0.8)
 ```
 
-![](markdown_output_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](markdown_output_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ``` r
 #scale here (can also regress out things)
@@ -246,7 +255,7 @@ seurat.object <- JackStraw(object = seurat.object, num.replicate = 100, do.print
 PCElbowPlot(object = seurat.object, num.pc=100)
 ```
 
-![](markdown_output_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](markdown_output_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Based on the info from the knee-plot we will use only the first 12 PCAs as input to tSNE:
 
@@ -285,4 +294,4 @@ text(rep(0, nrow(legend.data)), 1:nrow(legend.data), legend.data$acronym, pos=4)
 text(rep(1, nrow(legend.data)), 1:nrow(legend.data), legend.data$name, pos=4)
 ```
 
-![](markdown_output_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](markdown_output_files/figure-markdown_github/unnamed-chunk-20-1.png)
