@@ -34,7 +34,7 @@ seurat.object <- RunTSNE(object = seurat.object, dims.use = 1:12, do.fast = TRUE
 
 par(mfrow=c(1,2))
 plot(seurat.object@dr$tsne@cell.embeddings, pch=16, cex=0.9, col=paste0(heart$atlas$color2[as.integer(colnames(seurat.object@scale.data))], '80'), asp=1, xlab='', ylab='', main='', axes=FALSE)
-legend.data<-data.frame(col = unique(heart$atlas$color2), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
+legend.data<-data.frame(col = na.omit(unique(heart$atlas$color2)), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
 legend.data<-legend.data[order(legend.data[,2]),]
 
 par(mar=c(4,0,4,0))

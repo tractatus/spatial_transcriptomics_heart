@@ -57,6 +57,8 @@ quartz.save('./images/nuclei_to_count.png', type='png', dpi=300)
 
 ### Reference atlas construction.
 
+We 
+
 ### Segmentation.
 
 ### Registration.
