@@ -5,7 +5,10 @@ output: rmarkdown::github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-load('./data/ST_heart_08032018.RData')
+load('./data/ST_heart_03042018.RData')
+load('./data/ST_heart_all_detected_nuclei.RData')
+nuclei.inside.spot <- table(!is.na(master.nuclei$spot.id[!is.na(master.nuclei$acronym)]) )
+
 unique.regions<-data.frame(col = unique(heart$atlas$color2), acronym = na.omit(unique(heart$atlas$acronym)), name = na.omit(unique(heart$atlas$name)) )
 nuclei.to.transcripts<-cor.test(heart$atlas$nuclei, apply(heart$genes,1,sum))
 
@@ -32,9 +35,11 @@ clusters<-Mclust(nuclei.dataframe, G=2)
 
 ### Reconstructing the transcriptome in 3D.
 
-From a total of nine sections (_n_ = `r length(unique(heart$atlas$image))`) we reconstructed the embrionic heart in three-dimensions by registering individual tissue sections onto matched planes within a 3D reference atlas that we constructed based on (). We further deliminated the embrionic heart into `r length(unique(heart$atlas$acronym))` unique anatomical regions (`r paste(unique.regions[,2], unique.regions[,3], sep=': ')`). 
+From a total of nine sections (_n_ = `r length(unique(heart$atlas$image))`) we reconstructed the embryonic heart in three-dimensions by registering individual tissue sections onto matched planes within a 3D reference atlas that we constructed based on (). We further deliminated the embrionic heart into `r length(unique(heart$atlas$acronym))` unique anatomical regions (`r paste(paste0(unique.regions[,2], ':'), unique.regions[,3], table(master.nuclei$acronym)[match(unique.regions[,2], names(table(master.nuclei$acronym)))], 'cells', table(heart$atlas$acronym)[match(unique.regions[,2], names(table(heart$atlas$acronym)))], 'spots')`). 
 
-Using cell segmentation algorithms on the HNE image we detected a total of nuclei in the tissue. Out of all the cells detected a total of XXX were captured by one of the barcoded RNA-capturing spots (`r as.integer(sum(heart$atlas$nuclei))` out of cell nuclei) with an average of `r as.integer(mean(heart$atlas$nuclei))` nuclei per spot (_M_ = `r round(mean(heart$atlas$nuclei), 2)` nuclei, _SD_ = `r round(sd(heart$atlas$nuclei), 2)` nuclei). A cross the entire tissue there was a negative correlation between number of cell nuclei in each spot and the number of transcripts detected in the same spot _r_ = `r round(nuclei.to.transcripts$estimate, 2)` (_t_ = `r round(nuclei.to.transcripts$statistic, 2)`, _df_ = `r round(nuclei.to.transcripts$parameter, 2)`, _p_ < `r p.value.report(nuclei.to.transcripts$p.value)`). However, upon closer examination, cell density and number of transcripts seggregated into two seperate bivariate distributions: one with an average of cell nuclei per spots and another distribution with an average of less than ten cell nuclei per spot. These two clusters were located into different anatomical compartments where spots with an average number of cell nuclei .
+Using cell segmentation algorithms on the HNE image we detected a total of `r nrow(master.nuclei[!is.na(master.nuclei$acronym),])` cell nuclei in all sections. Out of all the cells detected a total of `r as.integer(sum(heart$atlas$nuclei))` (`r round((as.integer(sum(heart$atlas$nuclei))/nrow(master.nuclei[!is.na(master.nuclei$acronym),]))*100, 2)`%)  were captured by one of the barcoded RNA-capturing spots with an average of `r as.integer(mean(heart$atlas$nuclei))` nuclei per spot (_M_ = `r round(mean(heart$atlas$nuclei), 2)` nuclei, _SD_ = `r round(sd(heart$atlas$nuclei), 2)` nuclei). 
+
+<!-- A cross the entire tissue there was a negative correlation between number of cell nuclei in each spot and the number of transcripts detected in the same spot _r_ = `r round(nuclei.to.transcripts$estimate, 2)` (_t_ = `r round(nuclei.to.transcripts$statistic, 2)`, _df_ = `r round(nuclei.to.transcripts$parameter, 2)`, _p_ < `r p.value.report(nuclei.to.transcripts$p.value)`). However, upon closer examination, cell density and number of transcripts seggregated into two seperate bivariate distributions: one with an average of cell nuclei per spots and another distribution with an average of less than ten cell nuclei per spot. These two clusters were located into different anatomical compartments where spots with an average number of cell nuclei .
 
 ```{r  fig1, include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
 quartz(width=6.908108, height= 2.5)
@@ -51,15 +56,30 @@ plot(rnorm(100))
 quartz.save('./images/nuclei_to_count.png', type='png', dpi=300)
 ```
 ![Showing spots in 3D.](./images/nuclei_to_count.png)
-
+-->
 
 ## Methods
 
 ### Reference atlas construction.
 
-We 
+Our atlas is based on of carnegie stage 18 (de Bakker et al., 2016), CS18-6524. The heart was cropped out from the rest of the atlas by creating a bounding box with the pixel coordinates (7, 170, 775, 1239). Systematic elongations of the heart compared to the atlas because of its cutting plane was corrected by extending the axis by bicubic interpolation with a factor of 3.25. The atlas ontology was further refined by drawing region of interests for regions which was then extended to 10 unique anatomical regions. Each anatomical region is represented in the 2D plane as vector graphics.
+
+### Image processing
+
+Image processing for atlas registration was done using custom code written in C++ and R using OpenCV.
 
 ### Segmentation.
 
+H&E images were converted to grayscale and tissue outline as well as cell nuclei were segmented by running eight linearly spaced binary thresholds on the intensity and then using a connected components algorithm with subsequent filtering of components based on size, eccentricity and intensity (Fürth et al., 2018). 
+
 ### Registration.
 
+Registration of the heart atlas onto each section follows a similar scheme as previously described for brain tissue (Fürth et al., 2018). The contour of both the H&E labeled tissue section and the atlas section were reduced and matched by use of principal component analysis. Any registration errors were manually corrected by changing, adding or removing landmarks along the contour. The registration transform was obtained by thin-plate B-splines (Bookstein, 1989).
+
+### References
+
+Bernadette S. de Bakker, Kees H. de Jong, Jaco Hagoort, Karel de Bree, Clara T. Besselink, Froukje E. C. de Kanter, Tyas Veldhuis, Babette Bais, Reggie Schildmeijer, Jan M. Ruijter, Roelof-Jan Oostra, Vincent M. Christoffels, Antoon F. M. Moorman (2016) An interactive three-dimensional digital atlas and quantitative database of human development _Science_ , Vol. 354, Issue 6315
+
+Bookstein (1989) Principal warps: thin-plate splines and the decomposition of deformations, _IEEE Transactions on Pattern Analysis and Machine Intelligence_, vol. 11, no. 6, pp. 567-585
+
+Daniel Fürth, Thomas Vaissière, Ourania Tzortzi, Yang Xuan, Antje Märtin, Iakovos Lazaridis, Giada Spigolon, Gilberto Fisone, Raju Tomer, Karl Deisseroth, Marie Carlén, Courtney A. Miller, Gavin Rumbaugh & Konstantinos Meletis (2018) An interactive framework for whole-brain maps at cellular resolution, _Nature Neuroscience_ vol. 21, pp. 139–149 
